@@ -80,7 +80,7 @@ Below is an overview of the code structure for this repository:
   - **`play_genuine_hybrid_ppo_a2c.py`** Policy playback script for visualizing trained models
   - **`evaluate_genuine_hybrid_ppo_a2c.py`** Comprehensive evaluation script with performance metrics and statistical analysis
 
-  ```bash
+```bash
 Hybrid_PPO_A2C/
 ├── scripts/reinforcement_learning/skrl/
 │   ├── train_genuine_hybrid_ppo_a2c.py      # Main training script
@@ -91,5 +91,6 @@ Hybrid_PPO_A2C/
 └── source/isaaclab_tasks/.../config/h1/
     └── skrl_genuine_hybrid_ppo_a2c_cfg.yaml # Training configuration
 ```
+
 
 Note: This repository contains only the essential custom files needed for the hybrid algorithm. Standard Isaac Lab files are not included and should be available in your main installation.
