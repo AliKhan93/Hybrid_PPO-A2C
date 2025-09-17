@@ -7,7 +7,7 @@
 
 ## Overview
 
-**Hybrid PPO-A2C** is a versatile reinforcement learning framework that provides highly efficient mobile robot training with state-of-the-art performance on rough terrain locomotion and adaptive learning dynamics through genuine hybrid PPO-A2C algorithms.
+**Hybrid PPO-A2C** is a versatile reinforcement learning framework that provides highly efficient mobile robot training with state-of-the-art performance on rough terrain locomotion and adaptive learning dynamics through hybrid PPO-A2C algorithms.
 
 This repo covers the hybrid algorithm implementation and training in Isaac Lab. **You should be able to train any mobile robot locomotion task on rough terrain, without tuning any parameters**.
 
@@ -80,7 +80,7 @@ Below is an overview of the code structure for this repository:
   - **`play_genuine_hybrid_ppo_a2c.py`** Policy playback script for visualizing trained models
   - **`evaluate_genuine_hybrid_ppo_a2c.py`** Comprehensive evaluation script with performance metrics and statistical analysis
 
-  ```
+  ```bash
 Hybrid_PPO_A2C/
 ├── scripts/reinforcement_learning/skrl/
 │   ├── train_genuine_hybrid_ppo_a2c.py      # Main training script
@@ -92,4 +92,4 @@ Hybrid_PPO_A2C/
     └── skrl_genuine_hybrid_ppo_a2c_cfg.yaml # Training configuration
 ```
 
-**Note**: This repository contains only the essential custom files needed for the hybrid algorithm. Standard Isaac Lab files are not included and should be available in your main installation.
+Note: This repository contains only the essential custom files needed for the hybrid algorithm. Standard Isaac Lab files are not included and should be available in your main installation.
