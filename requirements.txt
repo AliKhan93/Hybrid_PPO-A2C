@@ -1,0 +1,16 @@
+# Core dependencies (should be available in Isaac Lab)
+torch>=1.13.0
+numpy>=1.21.0
+gymnasium>=0.28.0
+skrl>=1.4.3
+hydra-core>=1.2.0
+omegaconf>=2.2.0
+
+# Additional dependencies for evaluation and visualization
+matplotlib>=3.5.0
+seaborn>=0.11.0
+tensorboard>=2.10.0
+tqdm>=4.64.0
+
+# Isaac Lab specific (should be installed with Isaac Lab)
+isaac-sim>=4.5.0

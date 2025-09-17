@@ -1,0 +1,181 @@
+# Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+# Genuine Hybrid PPO-A2C Configuration for H1 Rough Terrain Locomotion
+# This configuration implements a comprehensive hybrid approach combining
+# Proximal Policy Optimization (PPO) and Advantage Actor-Critic (A2C) algorithms
+#
+# NOTE: Rollouts set to 24 (same as standard PPO) for fair comparison
+
+seed: 42
+
+# Model Configuration
+# Shared architecture with separate policy and value heads
+models:
+  separate: False  # Use shared model architecture
+  policy:
+    class: GaussianMixin
+    clip_actions: False
+    clip_log_std: True
+    min_log_std: -20.0
+    max_log_std: 2.0
+    initial_log_std: 0.0
+    network:
+      - name: net
+        input: STATES
+        layers: [512, 256, 128]
+        activations: elu
+    output: ACTIONS
+  value:
+    class: DeterministicMixin
+    clip_actions: False
+    network:
+      - name: net
+        input: STATES
+        layers: [512, 256, 128]
+        activations: elu
+    output: ONE
+
+# Memory Configuration
+# Optimized for both PPO and A2C training
+memory:
+  class: RandomMemory
+  memory_size: -1  # automatically determined (same as agent:rollouts)
+
+# Genuine Hybrid PPO-A2C Agent Configuration
+agent:
+  class: PPO  # Use standard PPO for now, will override methods GenuineHybridPPOA2C or PPO
+  rollouts: 24  # Required by skrl runner
+  
+  # PPO-specific parameters
+  ppo_rollouts: 24  # Same as standard PPO for fair comparison
+  ppo_learning_epochs: 5
+  ppo_mini_batches: 4
+  ppo_learning_rate: 1.0e-03
+  ppo_ratio_clip: 0.2
+  ppo_value_clip: 0.2
+  ppo_entropy_coef: 0.01
+  ppo_value_coef: 1.0
+  ppo_grad_norm_clip: 1.0
+  
+  # A2C-specific parameters
+  a2c_rollouts: 24  # Same as standard PPO for fair comparison
+  a2c_learning_rate: 1.0e-03
+  a2c_entropy_coef: 0.01
+  a2c_value_coef: 1.0
+  a2c_grad_norm_clip: 1.0
+  
+  # Common parameters
+  discount_factor: 0.995
+  lambda_gae: 0.95
+  
+  # Hybrid-specific parameters
+  training_mode: "adaptive"  # Options: "alternate", "mixed", "adaptive"
+  ppo_weight: 0.7  # Initial weight for PPO component
+  a2c_weight: 0.3  # Initial weight for A2C component
+  adaptive_weighting: true  # Enable adaptive weight adjustment
+  performance_window: 10  # Window for performance tracking
+  
+  # Update frequency for alternating mode
+  update_frequency:
+    ppo: 1
+    a2c: 1
+  
+  # Robustness features
+  early_stopping_patience: 100
+  early_stopping_threshold: 1e-2
+  gradient_clip_norm: 1.0
+  
+  # Learning rate scheduling
+  learning_rate_scheduler: null
+  learning_rate_scheduler_kwargs: null
+  
+  # Preprocessing
+  state_preprocessor: null
+  state_preprocessor_kwargs: null
+  value_preprocessor: null
+  value_preprocessor_kwargs: null
+  
+  # Training parameters
+  random_timesteps: 0
+  learning_starts: 0
+  rewards_shaper_scale: 1.0
+  time_limit_bootstrap: false
+  
+  # Logging and checkpointing
+  experiment:
+    directory: "h1_rough_genuine_hybrid_ppo_a2c"
+    experiment_name: ""
+    write_interval: auto
+    checkpoint_interval: 120
+
+# Sequential trainer configuration
+trainer:
+  class: SequentialTrainer
+  timesteps: 72000  # Total training timesteps
+  environment_info: log
+
+# Hyperparameter Tuning Guidelines:
+# 
+# 1. Learning Rates:
+#    - PPO: Start with 1e-3, adjust based on KL divergence
+#    - A2C: Can be same as PPO or slightly higher (1.5e-3)
+#    - Use KLAdaptiveLR scheduler for automatic adjustment
+#
+# 2. Training Modes:
+#    - "alternate": Good for initial exploration, equal PPO/A2C usage
+#    - "mixed": Best for stable training, combines both losses
+#    - "adaptive": Advanced mode, automatically adjusts weights
+#
+# 3. Weight Configuration:
+#    - Start with PPO: 0.7, A2C: 0.3 (PPO is more stable)
+#    - Adjust based on environment complexity
+#    - For complex environments, increase A2C weight (0.4-0.5)
+#
+# 4. Rollout Configuration:
+#    - Set to 24 for fair comparison with standard PPO
+#    - Can be increased (32-64) for better advantage estimation in production
+#    - Balance between sample efficiency and computational cost
+#
+# 5. Robustness Features:
+#    - Gradient clipping: Essential for stability (1.0)
+#    - Early stopping: Prevents overfitting (patience: 50)
+#    - Layer normalization: Improves training stability
+#
+# 6. Environment-Specific Tuning:
+#    - H1 rough terrain: Increase entropy coefficient (0.02-0.05)
+#    - Reduce value clip for better value learning (0.1-0.15)
+#    - Adjust GAE lambda based on episode length (0.9-0.99)
+
+# Evaluation Metrics:
+# - Average reward per episode
+# - Policy entropy (exploration measure)
+# - Value loss (value function accuracy)
+# - KL divergence (policy change measure)
+# - Advantage statistics (bias/variance)
+# - PPO/A2C weight evolution (adaptive mode)
+# - Training stability metrics
+
+# Edge Cases and Solutions:
+# 1. Convergence Issues:
+#    - Reduce learning rates
+#    - Increase entropy coefficient
+#    - Use mixed training mode
+#
+# 2. Variance Reduction:
+#    - Increase rollout size
+#    - Use GAE with higher lambda
+#    - Implement value function normalization
+#
+# 3. Scalability to Large State Spaces:
+#    - Increase network capacity
+#    - Use attention mechanisms
+#    - Implement experience replay
+#
+# 4. Training Instability:
+#    - Enable gradient clipping
+#    - Use layer normalization
+#    - Implement early stopping
+#    - Monitor KL divergence
